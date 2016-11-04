@@ -28,18 +28,35 @@
         <script src="http://teaching-materials.org/common/youtube.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script>
-            $.getJSON("movies.json", function(json) {
-                $.each(json, function(i, video) {
-                    addVideoToList(video);
+            /* global document, $ */
+            var addVideoToList,
+                getThumbnail,
+                getVideo,
+                youtube;
+
+            addVideoToList = function (video) {
+                var $videoLink = $('<a>'),
+                    $videoItem = $('<li>');
+
+                $videoLink.append(video.title).append(getThumbnail(video));
+
+                $videoLink.on('click', function (e) {
+                    e.preventDefault();
+                    getVideo(video);
                 });
-            });
-            getThumbnail = function(video) {
+
+                $videoItem.append($videoLink);
+                $('#videos-list').append($videoItem);
+            };
+
+            getThumbnail = function (video) {
                 var thumbnailUrl = youtube.generateThumbnailUrl(video.youtubeId),
                     $thumbnailImg = $('<img>');
 
                 return $thumbnailImg.attr('src', thumbnailUrl);
             };
-            getVideo = function(video) {
+
+            getVideo = function (video) {
                 var $videoEmbed = $('<iframe />'),
                     $videoWatcher = $('#video-watcher');
 
@@ -54,20 +71,12 @@
                 $videoWatcher.html($videoEmbed);
                 $videoWatcher.fadeIn();
             };
-            addVideoToList = function(video) {
-                var $videoLink = $('<a>'),
-                    $videoItem = $('<li>');
 
-                $videoLink.append(video.title).append(getThumbnail(video));
-
-                $videoLink.on('click', function(e) {
-                    e.preventDefault();
-                    getVideo(video);
+            $.getJSON('movies.json', function (json) {
+                $.each(json, function (i, video) {
+                    addVideoToList(video);
                 });
-
-                $videoItem.append($videoLink);
-                $('#videos-list').append($videoItem);
-            };
+            });
         </script>
     </body>
 </html>
